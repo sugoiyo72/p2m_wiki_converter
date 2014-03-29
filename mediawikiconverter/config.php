@@ -20,9 +20,13 @@
 
 	define ("MW_SPECIALUPLOAD_URL", "http://10.211.55.4/mediawiki/index.php/%E7%89%B9%E5%88%A5:%E3%82%A2%E3%83%83%E3%83%97%E3%83%AD%E3%83%BC%E3%83%89");
 	// require pukiwiki functions
-	//require "lib/func.php";
 	// classes that I wrote.
-	require LIB_DIR. "/func.php";
+	if (EUC_FLAG == true) {
+		define ("SOURCE_ENCODING", 'EUC-JP');
+	}else{
+		define ("SOURCE_ENCODING", 'UTF-8');
+	}
+	require "lib/func.php";
 	require LIB_DIR. "/searchDir.class.php";
 	require LIB_DIR. "/mycurl.class.php";
 ?>
