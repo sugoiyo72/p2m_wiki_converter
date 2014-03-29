@@ -46,8 +46,7 @@ flush();
 				0,
 				''
 			);
-
-			$wpLoginattempt = $this->getTagValue($ret, "input", "wpLoginattempt");
+			$wpLoginattempt = $this->getTagValue($ret, "input", "wpLoginAttempt");
 
 			$wpLoginToken = $this->getTagValue($ret, "input", "wpLoginToken");
 
@@ -57,7 +56,7 @@ flush();
 
 			$formaction = $this->getTagValue($ret, "form", "userlogin", "action");
 			$url = MW_ROOTURL. 	preg_replace("!^/!", "", $formaction);
-			print "<li>fom action : $url</li>";
+			print "<li>form action : $url</li>";
 ob_flush();
 flush();
 
@@ -72,7 +71,8 @@ flush();
 				''
 			);
 
-			$setcookieheader = "Set\-Cookie: wikidbUserName=";
+			$setcookieheader = "Set\-Cookie: .+?wikiUserName=";
+
 			if (preg_match("!$setcookieheader!", $ret)) {
 				return true;
 			}
@@ -98,7 +98,7 @@ flush();
 		}
 		function getParamsForPageUpload ($wiki) {
 			$title = urlencode(decode(preg_replace("!^(.+?)\.txt$!", "$1", $wiki)));
-			$url = MW_ROOTURL. "?title=$title&action=edit";
+			$url = MW_ROOT_SCRIPT. "?title=$title&action=edit";
 
 			$c = new mycurl;
 			$html = $c->execute(
@@ -176,6 +176,9 @@ flush();
 				//var_dump(file_exists($fullpath));
 				//print dirname("./$attache");
 				$name = decode(preg_replace("!^.+/(.+?)$!", "$1", $attache)) ;
+				if (EUC_FLAG) {
+					$name = mb_convert_encoding($name, 'UTF-8', 'EUC-JP');
+				}
 				$this->uploadAttachFile($attachefullpath, $name);
 				print "<li>upload file : ". $name. "</li>";
 ob_flush();
@@ -212,11 +215,15 @@ flush();
 			$params = array(
 				"wpSourceType",
 				"wpDestFile",
-				//"wpUploadDescription",
+				"wpUploadDescription",
+				"wpWatchthis",
+				"wpLicense",
 				"wpIgnoreWarning",
 				"wpUpload",
 				"wpDestFileWarningAck",
 				"wpForReUpload",
+				"wpEditToken",
+				"title",
 			);
 			$html = $this->htmlNormalize($html);
 			$html = preg_replace("!>!", ">\n", $html);
@@ -226,6 +233,7 @@ flush();
 			}
 			$ret["wpUploadFile"] = '@'.$attache;
 			$ret["wpDestFile"] = $name;
+			$ret["wpDestFileWarningAck"] = "1";
 			return $ret;
 			
 		}
@@ -246,13 +254,13 @@ flush();
 		}
 
 		function getTagValue ($str, $elementName, $keyword, $attrName = "value") {
-			print $keyword;
 			//if ($attrName == "action") {
 			//	preg_match("!<$elementName.+?('|\")$keyword('|\").*? >!", $str, $match);
 			//} else {
-				preg_match("!<$elementName.+?=('|\")$keyword('|\").*?>!", $str, $match);
+				preg_match("!<$elementName.+?=('|\")$keyword('|\").*?>!i", $str, $match);
 			//}
-			preg_match("!$attrName=('|\")(.*?)('|\")!", $match[0], $match);
+			preg_match("!$attrName=('|\")(.*?)('|\")!i", $match[0], $match);
+			print $keyword.' : '.$match[2].'<br>';
 			return $match[2];
 
 		}

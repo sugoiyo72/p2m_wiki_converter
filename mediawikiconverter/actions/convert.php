@@ -42,7 +42,10 @@
 
 		function convertWikiFile($wikiFile) {
 			$wiki = file_get_contents($wikiFile);
-			//$this->attachConvert($wiki);
+			if (EUC_FLAG) {
+				$wiki = mb_convert_encoding($wiki, 'UTF-8', 'EUC-JP');
+			}
+			#$this->attachConvert($wiki);
 			$wiki = $this->preConvert($wiki, $wikiFile);
 			$wiki = $this->eachLineConvert($wiki, $wikiFile);
 			$wiki = $this->postConvert($wiki, $wikiFile);
@@ -119,6 +122,12 @@
 			}
 		}
 		function saveConvertedWiki($wikiFile, $wiki) {
+				if (EUC_FLAG) {
+					$page = decode(preg_replace("!^.*/(.*).txt$!", "$1", $wikiFile));
+					$dir = decode(preg_replace("!^(.*)/.*.txt$!", "$1", $wikiFile));
+					$page = mb_convert_encoding($page, 'UTF-8', 'EUC-JP');
+					$wikiFile = $dir.'/'.encode($page).'.txt';
+				}
 			file_put_contents(DATA_DIR. "/$wikiFile", $wiki);
 		}
 

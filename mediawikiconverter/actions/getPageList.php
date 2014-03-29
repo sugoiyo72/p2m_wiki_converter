@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="ja">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo C_CHARSET?>">
 <title>mediawikiconverter</title>
 <style>
 	body {font-family: verdana;}
@@ -24,7 +24,11 @@
 			sort($files);
 			$content = "";
 			foreach($files as $wikifile) {
+				#print $wikifile;
 				$page = decode(preg_replace("!^.*/(.*).txt$!", "$1", $wikifile));
+				if (EUC_FLAG) {
+					$page = mb_convert_encoding($page, 'UTF-8', 'EUC-JP');
+				}
 				if (substr($page, 0, 1) == ":") {
 					continue;
 				}

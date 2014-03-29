@@ -7,7 +7,11 @@
 			}
 			$attaches = array_unique($matches[1]);
 
+
 			$wikiPageName = decode(preg_replace("!^.+/(.+)\.txt!", "$1", $wikiFile));
+				if (EUC_FLAG) {
+					$wikiPageName = mb_convert_encoding($wikiPageName, 'UTF-8', 'EUC-JP');
+				}
 
 			$this->copyAttach($wikiPageName, $attaches);
 
